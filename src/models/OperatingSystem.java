@@ -23,8 +23,8 @@ public class OperatingSystem {
 
 	public boolean addProcess(MyProcess myProcess) {
 		if (search(myProcess.getName()) == null) {
-			readyAndDespachado.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.isLocked()));
-//			processQueueReady.push(myProcess);
+			readyAndDespachado.add(new MyProcess(myProcess.getName(), myProcess.getTime(),myProcess.getPriority(), myProcess.isLocked()));
+			processQueueReady.push(myProcess,myProcess.getPriority());
 			return true;
 		}
 		return false;
@@ -108,7 +108,7 @@ public class OperatingSystem {
 	}
 
 	private void valideSystemTimer(MyProcess process) {
-		executing.add(new MyProcess(process.getName(), (process.getTime()-5< 0 ? 0:process.getTime()-5), process.isLocked()));
+		executing.add(new MyProcess(process.getName(), (process.getTime()-5< 0 ? 0:process.getTime()-5),process.getPriority(), process.isLocked()));
 		if ((process.getTime() - 5) > 0) {
 			proccessTimeDiscount(process);
 		} else {
@@ -121,15 +121,16 @@ public class OperatingSystem {
 	private void proccessTimeDiscount(MyProcess process) {
 		process.setTime(5);
 		valideLocked(process);
-		readyAndDespachado.add(new MyProcess(process.getName(), process.getTime(), process.isLocked()));
-//		processQueueReady.push(processQueueReady.pop());
+		readyAndDespachado.add(new MyProcess(process.getName(), process.getTime(),process.getPriority(), process.isLocked()));
+		MyProcess myProcess = processQueueReady.pop();
+		processQueueReady.push(myProcess,myProcess.getPriority());
 	}
 
 	private void valideLocked(MyProcess process) {
 		if (process.isLocked()) {
-			lockedAndWakeUp.add(new MyProcess(process.getName(), process.getTime(), process.isLocked()));
+			lockedAndWakeUp.add(new MyProcess(process.getName(), process.getTime(),process.getPriority(), process.isLocked()));
 		} else {
-			expired.add(new MyProcess(process.getName(), process.getTime(), process.isLocked()));
+			expired.add(new MyProcess(process.getName(), process.getTime(),process.getPriority(), process.isLocked()));
 		}
 	}
 
@@ -144,7 +145,6 @@ public class OperatingSystem {
 
 	public void verifyProcessName(String name) throws Exception {
 		Node<MyProcess> temp = processQueueReady.peek();
-		boolean aux = true;
 		while(temp != null){
 			if(temp.getData().getName().equals(name)){
 				throw new Exception("Nombre de proceso no disponible");
