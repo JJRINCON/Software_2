@@ -1,17 +1,10 @@
 package runner;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
+import presenters.Presenter;
 
-public class Run extends Application {
-
-
-    @Override
-    public void start(Stage stage) throws Exception {
-
-    }
+public class Run {
 
     public static void main(String[] args) {
-        launch(args);
+        new Presenter();
     }
 }
