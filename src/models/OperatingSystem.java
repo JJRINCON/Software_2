@@ -1,7 +1,7 @@
 package models;
 
 import java.util.ArrayList;
-
+import java.util.Collections;
 
 public class OperatingSystem {
 
@@ -23,8 +23,8 @@ public class OperatingSystem {
 
 	public boolean addProcess(MyProcess myProcess) {
 		if (search(myProcess.getName()) == null) {
-			readyAndDespachado.add(new MyProcess(myProcess.getName(), myProcess.getTime(),myProcess.getPriority(), myProcess.isLocked()));
-			processQueueReady.push(myProcess,myProcess.getPriority());
+			addProcess(readyAndDespachado, myProcess);
+			processQueueReady.push(myProcess, myProcess.getPriority());
 			return true;
 		}
 		return false;
@@ -32,6 +32,7 @@ public class OperatingSystem {
 
 	/**
 	 * Me avisa si no funciona, xd
+	 * 
 	 * @param actualName
 	 * @param name
 	 * @param time
@@ -41,15 +42,16 @@ public class OperatingSystem {
 		edit(search(actualName), name, time, lockedStatus);
 		edit(searchInList(actualName, readyAndDespachado), name, time, lockedStatus);
 	}
-	
+
 	private void edit(MyProcess myProcess, String name, int time, boolean lockedStatus) {
 		myProcess.setName(name);
 		myProcess.updateTime(time);
 		myProcess.setLocked(lockedStatus);
 	}
-	
+
 	/**
 	 * Eliminar de la cola y de la lista de listos
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -60,9 +62,9 @@ public class OperatingSystem {
 		if (temp.getData().getName().equals(name)) {
 			processQueueReady.pop();
 			isDelete = true;
-		}else {
+		} else {
 			isDelete = deleteProcess(name, isDelete, temp);
-		}	
+		}
 		return isDelete;
 	}
 
@@ -86,8 +88,7 @@ public class OperatingSystem {
 		}
 		return null;
 	}
-	
-	
+
 	public MyProcess search(String name) {
 		Node<MyProcess> temp = processQueueReady.peek();
 		while (temp != null) {
@@ -105,15 +106,16 @@ public class OperatingSystem {
 			MyProcess process = processQueueReady.peek().getData();
 			valideSystemTimer(process);
 		}
+		Collections.sort(readyAndDespachado);
 	}
 
 	private void valideSystemTimer(MyProcess process) {
-		executing.add(new MyProcess(process.getName(), (process.getTime()-5< 0 ? 0:process.getTime()-5),process.getPriority(), process.isLocked()));
+		addProcess(executing, process);
 		if ((process.getTime() - 5) > 0) {
 			proccessTimeDiscount(process);
 		} else {
 			MyProcess myProcess = processQueueReady.pop();
-			myProcess.setTime((int)myProcess.getTime());
+			myProcess.setTime((int) myProcess.getTime());
 			processTerminated.add(myProcess);
 		}
 	}
@@ -121,23 +123,30 @@ public class OperatingSystem {
 	private void proccessTimeDiscount(MyProcess process) {
 		process.setTime(5);
 		valideLocked(process);
-		readyAndDespachado.add(new MyProcess(process.getName(), process.getTime(),process.getPriority(), process.isLocked()));
+		addProcess(readyAndDespachado, process);
 		MyProcess myProcess = processQueueReady.pop();
-		processQueueReady.push(myProcess,myProcess.getPriority());
+		processQueueReady.push(myProcess, myProcess.getPriority());
 	}
 
 	private void valideLocked(MyProcess process) {
 		if (process.isLocked()) {
-			lockedAndWakeUp.add(new MyProcess(process.getName(), process.getTime(),process.getPriority(), process.isLocked()));
+			addProcess(lockedAndWakeUp, process);
 		} else {
-			expired.add(new MyProcess(process.getName(), process.getTime(),process.getPriority(), process.isLocked()));
+			addProcess(expired, process);
 		}
+	}
+
+	private void addProcess(ArrayList<MyProcess> myProcesses, MyProcess myProcess) {
+		boolean[] states = new boolean[] { myProcess.isLocked(), myProcess.isSuspended(), myProcess.isDestroid(),
+				myProcess.isComunication() };
+		myProcesses.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.getPriority(),
+				myProcess.getNameComunicationProcess(), states));
 	}
 
 	/**
 	 * 
-	 * @return Los procesos que se van agregando a la lista, estos toca ir actualizando
-	 * cada que se agregan a la interfaz
+	 * @return Los procesos que se van agregando a la lista, estos toca ir
+	 *         actualizando cada que se agregan a la interfaz
 	 */
 	public Queue<MyProcess> getProcessQueue() {
 		return processQueueReady;
@@ -145,14 +154,13 @@ public class OperatingSystem {
 
 	public void verifyProcessName(String name) throws Exception {
 		Node<MyProcess> temp = processQueueReady.peek();
-		while(temp != null){
-			if(temp.getData().getName().equals(name)){
+		while (temp != null) {
+			if (temp.getData().getName().equals(name)) {
 				throw new Exception("Nombre de proceso no disponible");
 			}
 			temp = temp.getNext();
 		}
 	}
-
 
 	public ArrayList<MyProcess> getProcessQueueLocked() {
 		return lockedAndWakeUp;
@@ -179,12 +187,13 @@ public class OperatingSystem {
 	 * @return Procesos despachados
 	 */
 	public ArrayList<MyProcess> getProcessDespachados() {
+
 		return readyAndDespachado;
 	}
 
 	/**
 	 * 
-	 * @return  Processos en ejecucion
+	 * @return Processos en ejecucion
 	 */
 	public ArrayList<MyProcess> getExecuting() {
 		return executing;
@@ -222,7 +231,7 @@ public class OperatingSystem {
 		return lockedAndWakeUp;
 	}
 
-	public static Object[][] processInfo(ArrayList<MyProcess> processes){
+	public static Object[][] processInfo(ArrayList<MyProcess> processes) {
 		Object[][] processInfo = new Object[processes.size()][3];
 		for (int i = 0; i < processes.size(); i++) {
 			processInfo[i][0] = processes.get(i).getName();
@@ -231,5 +240,17 @@ public class OperatingSystem {
 		}
 		return processInfo;
 	}
-	
+
+	public static void main(String[] args) {
+		OperatingSystem operatingSystem = new OperatingSystem();
+		operatingSystem.addProcess(new MyProcess("P1", 15, 1,"", new boolean[] { false, false, false, false }));
+		operatingSystem.addProcess(new MyProcess("P2", 10, 2,"", new boolean[] { false, false, false, false }));
+
+		operatingSystem.startSimulation();
+
+		for (MyProcess p : operatingSystem.getReadyProccess()) {
+			System.out.println(p.getName() + " " + p.getPriority() + " " + p.getTime());
+		}
+	}
+
 }

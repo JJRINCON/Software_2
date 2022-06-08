@@ -1,12 +1,12 @@
 package models;
 
-public class MyProcess {
+public class MyProcess implements Comparable<MyProcess>{
 
 	
-	private String name;
+	private String name, nameComunicationProcess;
 	private double time;
 	private int priority;
-	private boolean locked, suspended, comunication;
+	private boolean locked, suspended,destroid, comunication;
 
 	/**
 	 * 
@@ -15,14 +15,16 @@ public class MyProcess {
 	 * @param priority
 	 * @param states la lsitica de estados para no llenar tanto el constructor, xd :3
 	 */
-	public MyProcess(String name, double time,int priority, boolean ... states ) {
+	public MyProcess(String name, double time,int priority,String nameComunicationProcess, boolean ... states ) {
 		super();
 		this.name = name;
 		this.time = time;
 		this.priority = priority;
+		this.nameComunicationProcess = nameComunicationProcess;
 		this.locked = states[0];
 		this.suspended = states[1];
-		this.comunication = states[2];
+		this.destroid = states[2];
+		this.comunication = states[3];
 	}
 
 	public String getName() {
@@ -74,4 +76,23 @@ public class MyProcess {
 	public void setSuspended(boolean suspended) {
 		this.suspended = suspended;
 	}
+	public boolean isDestroid() {
+		return destroid;
+	}
+	public void setDestroid(boolean destroid) {
+		this.destroid = destroid;
+	}
+
+	public String getNameComunicationProcess() {
+		return nameComunicationProcess;
+	}
+	
+	public void setNameComunicationProcess(String nameComunicationProcess) {
+		this.nameComunicationProcess = nameComunicationProcess;
+	}
+	@Override
+	public int compareTo(MyProcess p) {
+		return getPriority()-p.getPriority();
+	}
+
 }

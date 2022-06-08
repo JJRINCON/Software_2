@@ -34,18 +34,27 @@ public class Queue<T> {
 	private void pushPriority(Node<T> temp) {
 		Node<T> tempNode = firstNode;
 		while (tempNode != null ) {
-			System.out.println(tempNode.getPriority()+" -- "+ temp.getPriority());
-			if(tempNode.getPriority() > temp.getPriority()) {
-				temp.setNext(tempNode);
-				searchDad(tempNode).setNext(temp);
-				tempNode = null;
-			}else if(tempNode.getNext()==null) {
-					tempNode.setNext(temp);
-					tempNode = null;
-			}else {
-				tempNode = tempNode.getNext();				
-			}
+			tempNode = validePriorityPush(temp, tempNode);
 		}
+	}
+
+	private Node<T> validePriorityPush(Node<T> temp, Node<T> tempNode) {
+		if(tempNode.getPriority() > temp.getPriority()) {
+			tempNode = priorityPush(temp, tempNode);
+		}else if(tempNode.getNext()==null) {
+				tempNode.setNext(temp);
+				tempNode = null;
+		}else {
+			tempNode = tempNode.getNext();				
+		}
+		return tempNode;
+	}
+
+	private Node<T> priorityPush(Node<T> temp, Node<T> tempNode) {
+		temp.setNext(tempNode);
+		searchDad(tempNode).setNext(temp);
+		tempNode = null;
+		return tempNode;
 	}
 
 	private Node<T> searchDad(Node<T> node) {
