@@ -7,15 +7,19 @@ public class OperatingSystem {
 
 	private Queue<MyProcess> processQueueReady;
 	private ArrayList<MyProcess> readyAndDespachado;
-	private ArrayList<MyProcess> lockedAndWakeUp;
+	private ArrayList<MyProcess> locked;
+	private ArrayList<MyProcess> wakeUp;
+	private ArrayList<MyProcess> suspended;
 	private ArrayList<MyProcess> executing;
 	private ArrayList<MyProcess> expired;
 	private ArrayList<MyProcess> processTerminated;
 
 	public OperatingSystem() {
 		this.processQueueReady = new Queue<>();
-		this.lockedAndWakeUp = new ArrayList<>();
+		this.locked = new ArrayList<>();
+		this.wakeUp = new ArrayList<>();
 		this.processTerminated = new ArrayList<>();
+		this.suspended = new ArrayList<>();
 		executing = new ArrayList<>();
 		expired = new ArrayList<>();
 		readyAndDespachado = new ArrayList<>();
@@ -23,7 +27,7 @@ public class OperatingSystem {
 
 	public boolean addProcess(MyProcess myProcess) {
 		if (search(myProcess.getName()) == null) {
-			addProcess(readyAndDespachado, myProcess,false);
+			addProcess(readyAndDespachado, myProcess, false);
 			processQueueReady.push(myProcess, myProcess.getPriority());
 			return true;
 		}
@@ -116,7 +120,7 @@ public class OperatingSystem {
 		} else {
 			MyProcess myProcess = processQueueReady.pop();
 			myProcess.setTime((int) myProcess.getTime());
-			addProcess(processTerminated,myProcess,false);
+			addProcess(processTerminated, myProcess, false);
 		}
 	}
 
@@ -130,9 +134,20 @@ public class OperatingSystem {
 
 	private void valideLocked(MyProcess process) {
 		if (process.isLocked()) {
-			addProcess(lockedAndWakeUp, process, false);
+			addProcess(locked, process, false);
+			valideSuspended(process);
+		} else if (process.isSuspended()) {
+			addProcess(suspended, process, false);
 		} else {
 			addProcess(expired, process, false);
+		}
+	}
+
+	private void valideSuspended(MyProcess process) {
+		if (process.isSuspended()) {
+			addProcess(suspended, process, false);
+		} else {
+			addProcess(wakeUp, process, false);
 		}
 	}
 
@@ -140,9 +155,10 @@ public class OperatingSystem {
 		boolean[] states = new boolean[] { myProcess.isLocked(), myProcess.isSuspended(), myProcess.isDestroid(),
 				myProcess.isComunication() };
 		if (isExecuting) {
-			myProcesses.add(new MyProcess(myProcess.getName(), (myProcess.getTime()-5< 0 ? 0:myProcess.getTime()-5), myProcess.getPriority(),
-					myProcess.getNameComunicationProcess(), states));
-		}else {			
+			myProcesses
+					.add(new MyProcess(myProcess.getName(), (myProcess.getTime() - 5 < 0 ? 0 : myProcess.getTime() - 5),
+							myProcess.getPriority(), myProcess.getNameComunicationProcess(), states));
+		} else {
 			myProcesses.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.getPriority(),
 					myProcess.getNameComunicationProcess(), states));
 		}
@@ -167,36 +183,45 @@ public class OperatingSystem {
 		}
 	}
 
-	
 	public void show() {
-		
+
 		System.out.println("Listos y despachados");
 		for (MyProcess myProcess : readyAndDespachado) {
 			System.out.println(myProcess.toString());
 		}
-		
+
 		System.out.println("En ejecucion");
 		for (MyProcess myProcess : executing) {
 			System.out.println(myProcess.toString());
 		}
-		
+
 		System.out.println("Expirados");
 		for (MyProcess myProcess : expired) {
 			System.out.println(myProcess.toString());
 		}
-		
+
 		System.out.println("Bloqueo, bloqueado, despertar");
-		for (MyProcess myProcess : lockedAndWakeUp) {
+		for (MyProcess myProcess : locked) {
 			System.out.println(myProcess.toString());
 		}
+
+		System.out.println("Suspender  reanudad");
+		for (MyProcess myProcess : suspended) {
+			System.out.println(myProcess.toString());
+		}
+
 		System.out.println("Terminados");
 		for (MyProcess myProcess : processTerminated) {
 			System.out.println(myProcess.toString());
 		}
 	}
-	
+
 	public ArrayList<MyProcess> getProcessQueueLocked() {
-		return lockedAndWakeUp;
+		return locked;
+	}
+
+	public ArrayList<MyProcess> getWakeUp() {
+		return wakeUp;
 	}
 
 	/**
@@ -245,7 +270,7 @@ public class OperatingSystem {
 	 * @return Los que pasan a bloqueado
 	 */
 	public ArrayList<MyProcess> getProcessToLocked() {
-		return lockedAndWakeUp;
+		return locked;
 	}
 
 	/**
@@ -253,7 +278,7 @@ public class OperatingSystem {
 	 * @return Porcesos bloqueados
 	 */
 	public ArrayList<MyProcess> getProcessLocked() {
-		return lockedAndWakeUp;
+		return locked;
 	}
 
 	/**
@@ -261,7 +286,11 @@ public class OperatingSystem {
 	 * @return Procesos despertados
 	 */
 	public ArrayList<MyProcess> getProcessWakeUp() {
-		return lockedAndWakeUp;
+		return wakeUp;
+	}
+
+	public ArrayList<MyProcess> getSuspended() {
+		return suspended;
 	}
 
 	public static Object[][] processInfo(ArrayList<MyProcess> processes) {
@@ -276,8 +305,9 @@ public class OperatingSystem {
 
 	public static void main(String[] args) {
 		OperatingSystem operatingSystem = new OperatingSystem();
-		operatingSystem.addProcess(new MyProcess("P1", 15, 2,"", new boolean[] { true, false, false, false }));
-		operatingSystem.addProcess(new MyProcess("P2", 10, 1,"", new boolean[] { false, false, false, false }));
+		operatingSystem.addProcess(new MyProcess("P1", 15, 2, "", new boolean[] { true, true, false, false }));
+		operatingSystem.addProcess(new MyProcess("P2", 10, 1, "", new boolean[] { true, false, false, false }));
+		operatingSystem.addProcess(new MyProcess("P3", 10, 3, "", new boolean[] { false, true, false, false }));
 
 		operatingSystem.startSimulation();
 
