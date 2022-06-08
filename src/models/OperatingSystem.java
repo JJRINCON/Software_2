@@ -23,7 +23,7 @@ public class OperatingSystem {
 
 	public boolean addProcess(MyProcess myProcess) {
 		if (search(myProcess.getName()) == null) {
-			addProcess(readyAndDespachado, myProcess);
+			addProcess(readyAndDespachado, myProcess,false);
 			processQueueReady.push(myProcess, myProcess.getPriority());
 			return true;
 		}
@@ -110,37 +110,42 @@ public class OperatingSystem {
 	}
 
 	private void valideSystemTimer(MyProcess process) {
-		addProcess(executing, process);
+		addProcess(executing, process, true);
 		if ((process.getTime() - 5) > 0) {
 			proccessTimeDiscount(process);
 		} else {
 			MyProcess myProcess = processQueueReady.pop();
 			myProcess.setTime((int) myProcess.getTime());
-			processTerminated.add(myProcess);
+			addProcess(processTerminated,myProcess,false);
 		}
 	}
 
 	private void proccessTimeDiscount(MyProcess process) {
 		process.setTime(5);
 		valideLocked(process);
-		addProcess(readyAndDespachado, process);
+		addProcess(readyAndDespachado, process, false);
 		MyProcess myProcess = processQueueReady.pop();
 		processQueueReady.push(myProcess, myProcess.getPriority());
 	}
 
 	private void valideLocked(MyProcess process) {
 		if (process.isLocked()) {
-			addProcess(lockedAndWakeUp, process);
+			addProcess(lockedAndWakeUp, process, false);
 		} else {
-			addProcess(expired, process);
+			addProcess(expired, process, false);
 		}
 	}
 
-	private void addProcess(ArrayList<MyProcess> myProcesses, MyProcess myProcess) {
+	private void addProcess(ArrayList<MyProcess> myProcesses, MyProcess myProcess, boolean isExecuting) {
 		boolean[] states = new boolean[] { myProcess.isLocked(), myProcess.isSuspended(), myProcess.isDestroid(),
 				myProcess.isComunication() };
-		myProcesses.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.getPriority(),
-				myProcess.getNameComunicationProcess(), states));
+		if (isExecuting) {
+			myProcesses.add(new MyProcess(myProcess.getName(), (myProcess.getTime()-5< 0 ? 0:myProcess.getTime()-5), myProcess.getPriority(),
+					myProcess.getNameComunicationProcess(), states));
+		}else {			
+			myProcesses.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.getPriority(),
+					myProcess.getNameComunicationProcess(), states));
+		}
 	}
 
 	/**
@@ -162,6 +167,34 @@ public class OperatingSystem {
 		}
 	}
 
+	
+	public void show() {
+		
+		System.out.println("Listos y despachados");
+		for (MyProcess myProcess : readyAndDespachado) {
+			System.out.println(myProcess.toString());
+		}
+		
+		System.out.println("En ejecucion");
+		for (MyProcess myProcess : executing) {
+			System.out.println(myProcess.toString());
+		}
+		
+		System.out.println("Expirados");
+		for (MyProcess myProcess : expired) {
+			System.out.println(myProcess.toString());
+		}
+		
+		System.out.println("Bloqueo, bloqueado, despertar");
+		for (MyProcess myProcess : lockedAndWakeUp) {
+			System.out.println(myProcess.toString());
+		}
+		System.out.println("Terminados");
+		for (MyProcess myProcess : processTerminated) {
+			System.out.println(myProcess.toString());
+		}
+	}
+	
 	public ArrayList<MyProcess> getProcessQueueLocked() {
 		return lockedAndWakeUp;
 	}
@@ -243,14 +276,12 @@ public class OperatingSystem {
 
 	public static void main(String[] args) {
 		OperatingSystem operatingSystem = new OperatingSystem();
-		operatingSystem.addProcess(new MyProcess("P1", 15, 1,"", new boolean[] { false, false, false, false }));
-		operatingSystem.addProcess(new MyProcess("P2", 10, 2,"", new boolean[] { false, false, false, false }));
+		operatingSystem.addProcess(new MyProcess("P1", 15, 2,"", new boolean[] { true, false, false, false }));
+		operatingSystem.addProcess(new MyProcess("P2", 10, 1,"", new boolean[] { false, false, false, false }));
 
 		operatingSystem.startSimulation();
 
-		for (MyProcess p : operatingSystem.getReadyProccess()) {
-			System.out.println(p.getName() + " " + p.getPriority() + " " + p.getTime());
-		}
+		operatingSystem.show();
 	}
 
 }

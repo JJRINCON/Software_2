@@ -94,5 +94,12 @@ public class MyProcess implements Comparable<MyProcess>{
 	public int compareTo(MyProcess p) {
 		return getPriority()-p.getPriority();
 	}
+	
+	@Override
+	public String toString() {
+		return getName() +" " +getTime() + " " + getPriority()+""+
+				getNameComunicationProcess() + " "+ isLocked() + " "+ 
+				isSuspended() + " "+ isDestroid() + " "+ isComunication();
+		}
 
 }
