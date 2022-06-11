@@ -10,8 +10,10 @@ public class OperatingSystem {
 	private ArrayList<MyProcess> locked;
 	private ArrayList<MyProcess> wakeUp;
 	private ArrayList<MyProcess> suspended;
+	private ArrayList<MyProcess> reanude;
 	private ArrayList<MyProcess> executing;
 	private ArrayList<MyProcess> expired;
+	private ArrayList<MyProcess> destroyed;
 	private ArrayList<MyProcess> processTerminated;
 
 	public OperatingSystem() {
@@ -20,9 +22,11 @@ public class OperatingSystem {
 		this.wakeUp = new ArrayList<>();
 		this.processTerminated = new ArrayList<>();
 		this.suspended = new ArrayList<>();
-		executing = new ArrayList<>();
-		expired = new ArrayList<>();
-		readyAndDespachado = new ArrayList<>();
+		this.executing = new ArrayList<>();
+		this.expired = new ArrayList<>();
+		this.readyAndDespachado = new ArrayList<>();
+		this.destroyed = new ArrayList<>();
+		this.reanude = new ArrayList<>();
 	}
 
 	public boolean addProcess(MyProcess myProcess) {
@@ -54,6 +58,9 @@ public class OperatingSystem {
 		myProcess.setLocked(states[0]);
 		myProcess.setSuspended(states[1]);
 		myProcess.setDestroid(states[2]);
+		MyProcess temp = myProcess;
+		deleteProccess(name);
+		addProcess(temp);
 	}
 
 	/**
@@ -127,26 +134,51 @@ public class OperatingSystem {
 		}
 	}
 
-	private void proccessTimeDiscount(MyProcess process) {
+	private void proccessTimeDiscount(MyProcess process ) {
 		process.setTime(5);
-		valideLocked(process);
-		addProcess(readyAndDespachado, process, false);
-		MyProcess myProcess = processQueueReady.pop();
-		processQueueReady.push(myProcess, myProcess.getPriority());
+		valideLocked(process);	
 	}
 
 	private void valideLocked(MyProcess process) {
 		if (process.isLocked()) {
 			addProcess(locked, process, false);
 			valideSuspended(process);
+			valideDestroyed(process);
 		} else if (process.isSuspended()) {
 			addProcess(suspended, process, false);
-		} else {
+			valideDestroyed(process);
+		} else if(process.isDestroid()) {
+			valideDestroyed(process);
+		}else {
 			addProcess(expired, process, false);
+			addProcess(readyAndDespachado, process, false);
+			MyProcess myProcess = processQueueReady.pop();
+			processQueueReady.push(myProcess, myProcess.getPriority());
+		}
+	}
+
+	private void valideDestroyed(MyProcess process) {
+		if (process.isDestroid()) {		
+			addProcess(executing,process,true);
+			addProcess(destroyed, process, false);
+			if ((process.getTime() - 5) > 0) {
+				process.setTime(5);
+				addProcess(expired, process, false);
+				addProcess(readyAndDespachado, process, false);
+				MyProcess myProcess = processQueueReady.pop();
+				processQueueReady.push(myProcess, myProcess.getPriority());
+			}else {
+				MyProcess myProcess = processQueueReady.pop();
+				myProcess.setTime((int) myProcess.getTime());
+				addProcess(processTerminated, myProcess, false);
+			}
+		}else {
+			addProcess(reanude, process, false);
 		}
 	}
 
 	private void valideSuspended(MyProcess process) {
+		
 		if (process.isSuspended()) {
 			addProcess(suspended, process, false);
 		} else {
@@ -212,10 +244,17 @@ public class OperatingSystem {
 			System.out.println(myProcess.toString());
 		}
 
+		System.out.println("Destruir");
+		for (MyProcess myProcess : destroyed) {
+			System.out.println(myProcess.toString());
+		}
+		
+		
 		System.out.println("Terminados");
 		for (MyProcess myProcess : processTerminated) {
 			System.out.println(myProcess.toString());
 		}
+		
 	}
 
 	public ArrayList<MyProcess> getProcessQueueLocked() {
@@ -294,6 +333,10 @@ public class OperatingSystem {
 	public ArrayList<MyProcess> getSuspended() {
 		return suspended;
 	}
+	
+	public ArrayList<MyProcess> getDestroyed() {
+		return destroyed;
+	}
 
 	public static Object[][] processInfo(ArrayList<MyProcess> processes) {
 		Object[][] processInfo = new Object[processes.size()][3];
@@ -307,9 +350,9 @@ public class OperatingSystem {
 
 	public static void main(String[] args) {
 		OperatingSystem operatingSystem = new OperatingSystem();
-		operatingSystem.addProcess(new MyProcess("P1", 15, 2, new boolean[] { true, true, false, false }));
-		operatingSystem.addProcess(new MyProcess("P2", 10, 1, new boolean[] { true, false, false, false }));
-		operatingSystem.addProcess(new MyProcess("P3", 10, 3, new boolean[] { false, true, false, false }));
+		operatingSystem.addProcess(new MyProcess("P1", 15, 2, new boolean[] { true, true, true, false }));
+		operatingSystem.addProcess(new MyProcess("P2", 20, 1, new boolean[] { true, false, true, false }));
+		operatingSystem.addProcess(new MyProcess("P3", 13, 3, new boolean[] { false, false, true, false }));
 
 		operatingSystem.startSimulation();
 
