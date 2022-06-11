@@ -15,6 +15,11 @@ public class OperatingSystem {
 	private ArrayList<MyProcess> expired;
 	private ArrayList<MyProcess> destroyed;
 	private ArrayList<MyProcess> processTerminated;
+	private ArrayList<MyProcess> comunicationProcess;
+	private ArrayList<MyProcess> lockedToSuspended;
+	private ArrayList<MyProcess> lockedToDestroyed;
+	private ArrayList<MyProcess> suspendedToDestroyed;
+	private ArrayList<MyProcess> destroyedToExecution;
 
 	public OperatingSystem() {
 		this.processQueueReady = new Queue<>();
@@ -27,6 +32,10 @@ public class OperatingSystem {
 		this.readyAndDespachado = new ArrayList<>();
 		this.destroyed = new ArrayList<>();
 		this.reanude = new ArrayList<>();
+		this.comunicationProcess = new ArrayList<>();
+		this.lockedToSuspended = new ArrayList<>();
+		this.lockedToDestroyed = new ArrayList<>();
+		this.suspendedToDestroyed = new ArrayList<>();
 	}
 
 	public boolean addProcess(MyProcess myProcess) {
@@ -117,7 +126,11 @@ public class OperatingSystem {
 
 	public void startSimulation() {
 		while (!processQueueReady.isEmpty()) {
-			MyProcess process = processQueueReady.peek().getData();
+			MyProcess process = processQueueReady.peek().getData();			
+			MyProcess myProcess = search(process.getNameComunicationProcess());
+			if(myProcess!=null && myProcess.isComunication()) {
+				comunicationProcess.add(process);
+			}
 			valideSystemTimer(process);
 		}
 		Collections.sort(readyAndDespachado);
@@ -143,34 +156,51 @@ public class OperatingSystem {
 		if (process.isLocked()) {
 			addProcess(locked, process, false);
 			valideSuspended(process);
-			valideDestroyed(process);
+			valideDestroyedToLocked(process);
 		} else if (process.isSuspended()) {
 			addProcess(suspended, process, false);
 			valideDestroyed(process);
 		} else if(process.isDestroid()) {
-			valideDestroyed(process);
+			destroyed(process);
 		}else {
 			addProcess(expired, process, false);
 			expiredAndReady(process);
 		}
 	}
 
-	private void valideDestroyed(MyProcess process) {
-		if (process.isDestroid()) {		
-			addProcess(executing,process,true);
-			addProcess(destroyed, process, false);
-			if ((process.getTime() - 5) > 0) {
-				process.setTime(5);
-				addProcess(expired, process, false);
-				expiredAndReady(process);
-			}else {
-				MyProcess myProcess = processQueueReady.pop();
-				myProcess.setTime((int) myProcess.getTime());
-				addProcess(processTerminated, myProcess, false);
-			}
+	private void valideDestroyedToLocked(MyProcess process) {
+		if (process.isDestroid()) {	
+			addProcess(lockedToDestroyed, process, false);
+			destroyed(process);
 		}else {
 			addProcess(reanude, process, false);
 			expiredAndReady(process);
+		}
+	}
+	
+	private void valideDestroyed(MyProcess process) {
+		if (process.isDestroid()) {	
+			addProcess(suspendedToDestroyed, process, false);
+			destroyed(process);
+		}else {
+			addProcess(reanude, process, false);
+			expiredAndReady(process);
+		}
+	}
+
+	private void destroyed(MyProcess process) {
+		process.setComunication(false);
+		addProcess(executing,process,true);
+		addProcess(destroyed, process, false);
+		addProcess(destroyedToExecution, process , false);
+		if ((process.getTime() - 5) > 0) {
+			process.setTime(5);
+			addProcess(expired, process, false);
+			expiredAndReady(process);
+		}else {
+			MyProcess myProcess = processQueueReady.pop();
+			myProcess.setTime((int) myProcess.getTime());
+			addProcess(processTerminated, myProcess, false);
 		}
 	}
 
@@ -184,6 +214,7 @@ public class OperatingSystem {
 	private void valideSuspended(MyProcess process) {
 		if (process.isSuspended()) {
 			addProcess(suspended, process, false);
+			addProcess(lockedToSuspended, process, false);
 		} else {
 			addProcess(wakeUp, process, false);
 		}
@@ -260,14 +291,6 @@ public class OperatingSystem {
 		
 	}
 
-	public ArrayList<MyProcess> getProcessQueueLocked() {
-		return locked;
-	}
-
-	public ArrayList<MyProcess> getWakeUp() {
-		return wakeUp;
-	}
-
 	/**
 	 * 
 	 * @return Procesos terminados
@@ -333,12 +356,86 @@ public class OperatingSystem {
 		return wakeUp;
 	}
 
+	
+	/**
+	 * 
+	 * @return  a suspendidos
+	 */
+	public ArrayList<MyProcess> getToSuspended() {
+		return suspended;
+	}
+	
+	/**
+	 * 
+	 * @return suspendidos
+	 */
 	public ArrayList<MyProcess> getSuspended() {
 		return suspended;
 	}
 	
+	/**
+	 * 
+	 * @return reanudar
+	 */
+	public ArrayList<MyProcess> getReanude() {
+		return reanude;
+	}
+	
+	/**
+	 * 
+	 * @return de bloqueo a suspencion
+	 */
+	public ArrayList<MyProcess> getLockedToSuspended() {
+		return lockedToSuspended;
+	}
+	
+	/**
+	 * 
+	 * @return de bloqueo a destruir
+	 */
+	public ArrayList<MyProcess> getLockedToDestroyed() {
+		return lockedToDestroyed;
+	}
+	
+	
+	/**
+	 * 
+	 * @return suspendido a destruido
+	 */
+	public ArrayList<MyProcess> getSuspendedToDestroyed() {
+		return suspendedToDestroyed;
+	}
+	
+	/**
+	 * 
+	 * @return a destruir
+	 */
+	public ArrayList<MyProcess> toDestroyed() {
+		return destroyed;
+	}
+	
+	/**
+	 * 
+	 * @return destruidos
+	 */
 	public ArrayList<MyProcess> getDestroyed() {
 		return destroyed;
+	}
+	
+	/**
+	 * 
+	 * @return de destruidos a ejecucion
+	 */
+	public ArrayList<MyProcess> getDestroyedToExecution() {
+		return destroyedToExecution;
+	}
+	
+	/**
+	 * 
+	 * @return procesos que se comunican
+	 */
+	public ArrayList<MyProcess> getComunicationProcess() {
+		return comunicationProcess;
 	}
 
 	public static Object[][] processInfo(ArrayList<MyProcess> processes) {
