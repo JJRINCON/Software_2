@@ -11,12 +11,10 @@ public class AddProcessPanel extends MyGridPanel{
     private JTextField processNameTxt;
     private JTextField processTimeTxt;
     private JTextField processPriorityTxt;
-    private JRadioButton isBlockedCb;
-    private JRadioButton isSuspendedCb;
-    private JRadioButton wakeUpCb;
-    private JRadioButton isResumeCb;
-    private JRadioButton isDetroyedCb;
-    private JRadioButton isComunicateCb;
+    private JCheckBox isBlockedCb;
+    private JCheckBox isSuspendedCb;
+    private JCheckBox isDetroyedCb;
+    private JCheckBox isComunicateCb;
     private JButton addBtn;
 
     public AddProcessPanel(ActionListener listener, boolean isEditing) {
@@ -32,8 +30,6 @@ public class AddProcessPanel extends MyGridPanel{
         initProcessPriorityTxt();
         initIsBlockedCb();
         initIsSuspendedCb();
-        initWakeUpCb();
-        initIsResumeCb();
         initIsDestroyedCb();
         initIsCommunicateCb();
         if(isEditing){
@@ -83,7 +79,7 @@ public class AddProcessPanel extends MyGridPanel{
     private void initIsBlockedCb(){
         JLabel isBlockedLb = createLb(" Bloqueo: ", new Font("Arial", Font.BOLD, 14));
         addComponent(isBlockedLb, 2, 11, 2, 0.1);
-        isBlockedCb = new JRadioButton();
+        isBlockedCb = new JCheckBox();
         isBlockedCb.setBackground(Color.WHITE);
         isBlockedCb.setHorizontalAlignment(SwingConstants.CENTER);
         addComponent(isBlockedCb, 4, 11, 1, 0.1);
@@ -92,36 +88,17 @@ public class AddProcessPanel extends MyGridPanel{
     private void initIsSuspendedCb(){
         JLabel isSuspendedLb = createLb(" Suspender: ", new Font("Arial", Font.BOLD, 14));
         addComponent(isSuspendedLb, 7, 11, 2, 0.1);
-        isSuspendedCb = new JRadioButton();
+        isSuspendedCb = new JCheckBox();
         isSuspendedCb.setBackground(Color.WHITE);
         isSuspendedCb.setHorizontalAlignment(SwingConstants.RIGHT);
         addComponent(isSuspendedCb, 9, 11, 1, 0.1);
         addComponent(new JLabel(" "), 0, 12, 11, 0.1);
     }
 
-    private void initWakeUpCb(){
-        JLabel wakeUpLb = createLb(" Despertar: ", new Font("Arial", Font.BOLD, 14));
-        addComponent(wakeUpLb, 2, 13, 2, 0.1);
-        wakeUpCb = new JRadioButton();
-        wakeUpCb.setBackground(Color.WHITE);
-        wakeUpCb.setHorizontalAlignment(SwingConstants.CENTER);
-        addComponent(wakeUpCb, 4, 13, 1, 0.1);
-    }
-
-    private void initIsResumeCb(){
-        JLabel isResumeLb = createLb(" Reanudar: ", new Font("Arial", Font.BOLD, 14));
-        addComponent(isResumeLb, 7, 13, 2, 0.1);
-        isResumeCb = new JRadioButton();
-        isResumeCb.setBackground(Color.WHITE);
-        isResumeCb.setHorizontalAlignment(SwingConstants.RIGHT);
-        addComponent(isResumeCb, 9, 13, 1, 0.1);
-        addComponent(new JLabel(" "), 0, 14, 11, 0.1);
-    }
-
     private void initIsDestroyedCb(){
         JLabel isDestroyedLb = createLb(" Destruir: ", new Font("Arial", Font.BOLD, 14));
         addComponent(isDestroyedLb, 2, 15, 2, 0.1);
-        isDetroyedCb = new JRadioButton();
+        isDetroyedCb = new JCheckBox();
         isDetroyedCb.setBackground(Color.WHITE);
         isDetroyedCb.setHorizontalAlignment(SwingConstants.CENTER);
         addComponent(isDetroyedCb, 4, 15, 1, 0.1);
@@ -130,7 +107,7 @@ public class AddProcessPanel extends MyGridPanel{
     private void initIsCommunicateCb(){
         JLabel isCommunicateLb = createLb(" Comunicar: ", new Font("Arial", Font.BOLD, 14));
         addComponent(isCommunicateLb, 7, 15, 2, 0.1);
-        isComunicateCb = new JRadioButton();
+        isComunicateCb = new JCheckBox();
         isComunicateCb.setBackground(Color.WHITE);
         isComunicateCb.setHorizontalAlignment(SwingConstants.RIGHT);
         addComponent(isComunicateCb, 9, 15, 1, 0.1);
@@ -178,14 +155,39 @@ public class AddProcessPanel extends MyGridPanel{
         }
     }
 
-    public void setInitialInfo(String name, String time, boolean isLocked){
+    public int getProcessPriority() throws Exception, NumberFormatException {
+        String text = processPriorityTxt.getText();
+        if(!text.isEmpty()){
+            return Integer.parseInt(text);
+        }else{
+            throw new Exception("El proceso debe tener una prioridad");
+        }
+    }
+
+    public void setInitialInfo(String name, String time, String priority,boolean[] states){
         processNameTxt.setText(name);
         processTimeTxt.setText(time);
-        isBlockedCb.setSelected(isLocked);
+        processPriorityTxt.setText(priority);
+        isBlockedCb.setSelected(states[0]);
+        isSuspendedCb.setSelected(states[1]);
+        isDetroyedCb.setSelected(states[2]);
+        isComunicateCb.setSelected(states[3]);
         addBtn.setName(name);
     }
 
     public boolean getIsBlocked(){
         return isBlockedCb.isSelected();
+    }
+
+    public boolean getIsSuspended(){
+        return isSuspendedCb.isSelected();
+    }
+
+    public boolean getIsDestroyed(){
+        return isDetroyedCb.isSelected();
+    }
+
+    public boolean getIsComunicate(){
+        return isComunicateCb.isSelected();
     }
 }

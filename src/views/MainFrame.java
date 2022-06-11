@@ -1,5 +1,8 @@
 package views;
 
+import models.MyProcess;
+import models.Queue;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -23,5 +26,9 @@ public class MainFrame extends JFrame {
     public void initMainPanel(){
         mainPanel = new MainPanel(actionlistener);
         add(mainPanel);
+    }
+
+    public void updateProcesses(Queue<MyProcess> processQueue){
+        mainPanel.updateProcesses(processQueue);
     }
 }

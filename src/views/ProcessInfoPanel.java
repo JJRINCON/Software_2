@@ -1,5 +1,6 @@
 package views;
 
+import models.MyProcess;
 import presenters.Events;
 
 import javax.swing.*;
@@ -10,36 +11,35 @@ public class ProcessInfoPanel extends MyGridPanel {
 
     private static final String CLOSE_BTN_TXT = "Cerrar";
 
-    public ProcessInfoPanel(ActionListener actionListener, boolean isCommunicate){
+    public ProcessInfoPanel(ActionListener actionListener, MyProcess process){
         setBackground(Color.decode("#FDFEFE"));
         setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
-        initComponents(actionListener);
+        initComponents(actionListener, process);
     }
 
-    private void initComponents(ActionListener actionListener){
-        initName("Proceso 1");
-        initProcessInfo();
-        initIsBlockedRb(false);
-        initIsSuspendedRb(true);
-        initWakeUpRb(false);
-        initIsResumeRb(false);
-        initIsDestroyedRb(true);
-        initIsCommunicateRb(false);
-        initCloseBtn("proceso1", actionListener);
+    private void initComponents(ActionListener actionListener, MyProcess process){
+        initName(process.getName());
+        initProcessInfo(process);
+        initIsBlockedRb(process.isLocked());
+        initIsSuspendedRb(process.isSuspended());
+        initIsDestroyedRb(process.isDestroid());
+        initIsCommunicateRb(process.isComunication());
+        initCloseBtn(process.getName(), actionListener);
     }
 
     private void initName(String name){
         addComponent(new JLabel(" "), 0, 0, 11, 0.1);
         JLabel titleLb = createLb("  " +name, new Font("Arial", Font.BOLD, 20));
         titleLb.setHorizontalTextPosition(SwingConstants.CENTER);
-        addComponent(titleLb, 4, 1, 4, 0.2);
+        titleLb.setHorizontalAlignment(SwingConstants.CENTER);
+        addComponent(titleLb, 3, 1, 4, 0.2);
         addComponent(new JLabel(" "), 0, 3, 11, 0.1);
     }
 
-    private void initProcessInfo(){
-        JLabel timeLb = createLb("Tiempo: ", new Font("Arial", Font.PLAIN, 14));
+    private void initProcessInfo(MyProcess process){
+        JLabel timeLb = createLb("Tiempo: " + process.getTime(), new Font("Arial", Font.PLAIN, 14));
         addComponent(timeLb, 2, 4, 3, 0.1);
-        JLabel priorityLb = createLb("Prioridad: ", new Font("Arial", Font.PLAIN, 14));
+        JLabel priorityLb = createLb("Prioridad: " + process.getPriority(), new Font("Arial", Font.PLAIN, 14));
         addComponent(priorityLb, 7, 4, 3, 0.1);
         addComponent(new JLabel(" "), 0, 5, 11, 0.1);
     }
@@ -57,21 +57,6 @@ public class ProcessInfoPanel extends MyGridPanel {
         JRadioButton isSuspendedCb = createRB(isSuspended);
         addComponent(isSuspendedCb, 9, 6, 1, 0.1);
         addComponent(new JLabel(" "), 0, 7, 11, 0.1);
-    }
-
-    private void initWakeUpRb(boolean wakeUp){
-        JLabel wakeUpLb = createLb("Despertar: ", new Font("Arial", Font.BOLD, 14));
-        addComponent(wakeUpLb, 2, 8, 1, 0.1);
-        JRadioButton wakeUpCb = createRB(wakeUp);
-        addComponent(wakeUpCb, 4, 8, 1, 0.1);
-    }
-
-    private void initIsResumeRb(boolean isResume){
-        JLabel isResumeLb = createLb("Reanudar: ", new Font("Arial", Font.BOLD, 14));
-        addComponent(isResumeLb, 7, 8, 1, 0.1);
-        JRadioButton isResumeCb = createRB(isResume);
-        addComponent(isResumeCb, 9, 8, 1, 0.1);
-        addComponent(new JLabel(" "), 0, 9, 11, 0.1);
     }
 
     private void initIsDestroyedRb(boolean isDestroyed){

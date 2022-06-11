@@ -8,25 +8,24 @@ import java.awt.event.ActionListener;
 
 public class ProcessPanel extends MyGridPanel{
 
-
     private static final String DELETE_BTN_TXT = "Eliminar";
     private static final String EDIT_BTN_TXT = "Editar";
     private static final String VIEW_INFO_BTN_TXT = "Ver informacion";
     private static final String COMMUNICATE_PROCESS_BTN_TXT = "Comunicar Procesos";
 
-    public ProcessPanel(ActionListener actionListener){
+    public ProcessPanel(ActionListener actionListener, String processName){
         setBackground(Color.decode("#FDFEFE"));
-        initComponents(actionListener);
+        initComponents(actionListener, processName);
         setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
     }
 
-    private void initComponents(ActionListener actionListener){
+    private void initComponents(ActionListener actionListener, String processName){
         addComponent(new JLabel(" "), 0, 0, 12, 0.2);
-        JLabel lbName = new JLabel("Proceso 1");
+        JLabel lbName = new JLabel(processName);
         lbName.setFont(new Font("Arial", Font.BOLD, 16));
         addComponent(lbName, 1, 1, 1, 1);
         addComponent(new JLabel(" "), 0, 2, 12, 0.2);
-        initButtons(actionListener,"xd");
+        initButtons(actionListener,processName);
     }
 
     private void initButtons(ActionListener listener, String name){

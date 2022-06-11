@@ -1,5 +1,8 @@
 package views;
 
+import models.MyProcess;
+import models.Node;
+import models.Queue;
 import presenters.Events;
 
 import javax.swing.*;
@@ -40,17 +43,16 @@ public class ProcessesPanel extends MyGridPanel {
     }
 
     private void initProcessesPanel(){
-        processes = new JPanel(new GridLayout(10,1));
+        processes = new JPanel(new GridLayout(1,1));
         processes.setBackground(Color.decode("#FDFEFE"));
-        processes.add(new ProcessPanel(listener));
-        for (int i = 1; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             processes.add(new JLabel(" "));
         }
         scrollPane.add(processes);
         addComponent(processes, 0, 1, 12, 0.8);
     }
 
-    /*public void updateProcesses(Queue<MyProcess> processQueue){
+    public void updateProcesses(Queue<MyProcess> processQueue){
         removeAll();
         addTitle();
         processes = new JPanel(new GridLayout(processQueue.size(), 1));
@@ -79,11 +81,11 @@ public class ProcessesPanel extends MyGridPanel {
     private void addProcesses(Queue<MyProcess> processQueue){
         Node<MyProcess> temp = processQueue.peek();
         while (temp != null){
-            ProcessPanel processPanel = new ProcessPanel(temp.getData(), listener);
+            ProcessPanel processPanel = new ProcessPanel(listener, temp.getData().getName());
             processes.add(processPanel);
             temp = temp.getNext();
         }
-    }*/
+    }
 
     public void initAddProcessBtn(){
         JButton addProcessBtn = new JButton(TXT_ADD_PROCESS_BTN);

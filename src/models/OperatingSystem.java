@@ -40,17 +40,20 @@ public class OperatingSystem {
 	 * @param actualName
 	 * @param name
 	 * @param time
-	 * @param lockedStatus
+	 * @param states
 	 */
-	public void editProcess(String actualName, String name, int time, boolean lockedStatus) {
-		edit(search(actualName), name, time, lockedStatus);
-		edit(searchInList(actualName, readyAndDespachado), name, time, lockedStatus);
+	public void editProcess(String actualName, String name, int time, int priority,boolean ... states) {
+		edit(search(actualName), name, time, priority, states);
+		edit(searchInList(actualName, readyAndDespachado), name, time, priority, states);
 	}
 
-	private void edit(MyProcess myProcess, String name, int time, boolean lockedStatus) {
+	private void edit(MyProcess myProcess, String name, int time, int priority, boolean ... states) {
 		myProcess.setName(name);
 		myProcess.updateTime(time);
-		myProcess.setLocked(lockedStatus);
+		myProcess.setPriority(priority);
+		myProcess.setLocked(states[0]);
+		myProcess.setSuspended(states[1]);
+		myProcess.setDestroid(states[2]);
 	}
 
 	/**
@@ -157,10 +160,9 @@ public class OperatingSystem {
 		if (isExecuting) {
 			myProcesses
 					.add(new MyProcess(myProcess.getName(), (myProcess.getTime() - 5 < 0 ? 0 : myProcess.getTime() - 5),
-							myProcess.getPriority(), myProcess.getNameComunicationProcess(), states));
+							myProcess.getPriority(), states));
 		} else {
-			myProcesses.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.getPriority(),
-					myProcess.getNameComunicationProcess(), states));
+			myProcesses.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.getPriority(), states));
 		}
 	}
 
@@ -305,9 +307,9 @@ public class OperatingSystem {
 
 	public static void main(String[] args) {
 		OperatingSystem operatingSystem = new OperatingSystem();
-		operatingSystem.addProcess(new MyProcess("P1", 15, 2, "", new boolean[] { true, true, false, false }));
-		operatingSystem.addProcess(new MyProcess("P2", 10, 1, "", new boolean[] { true, false, false, false }));
-		operatingSystem.addProcess(new MyProcess("P3", 10, 3, "", new boolean[] { false, true, false, false }));
+		operatingSystem.addProcess(new MyProcess("P1", 15, 2, new boolean[] { true, true, false, false }));
+		operatingSystem.addProcess(new MyProcess("P2", 10, 1, new boolean[] { true, false, false, false }));
+		operatingSystem.addProcess(new MyProcess("P3", 10, 3, new boolean[] { false, true, false, false }));
 
 		operatingSystem.startSimulation();
 

@@ -1,5 +1,7 @@
 package views;
 
+import models.MyProcess;
+import models.Queue;
 import presenters.Events;
 
 import javax.swing.*;
@@ -50,5 +52,9 @@ public class MainPanel extends MyGridPanel {
         startSimulationPanel.addComponent(new JLabel(" "), 0, 5, 12, 0.4);
         addComponent(startSimulationPanel, 2, 1, 9, 1);
         updateUI();
+    }
+
+    public void updateProcesses(Queue<MyProcess> processQueue){
+        processesPanel.updateProcesses(processQueue);
     }
 }

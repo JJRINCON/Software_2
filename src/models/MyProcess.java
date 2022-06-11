@@ -15,12 +15,11 @@ public class MyProcess implements Comparable<MyProcess>{
 	 * @param priority
 	 * @param states la lsitica de estados para no llenar tanto el constructor, xd :3
 	 */
-	public MyProcess(String name, double time,int priority,String nameComunicationProcess, boolean ... states ) {
+	public MyProcess(String name, double time,int priority, boolean ... states ) {
 		super();
 		this.name = name;
 		this.time = time;
 		this.priority = priority;
-		this.nameComunicationProcess = nameComunicationProcess;
 		this.locked = states[0];
 		this.suspended = states[1];
 		this.destroid = states[2];

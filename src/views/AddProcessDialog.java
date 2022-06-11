@@ -28,11 +28,27 @@ public class AddProcessDialog extends JDialog {
         return addProcessPanel.getProcessTime();
     }
 
+    public int getProcessPriority() throws Exception, NumberFormatException {
+        return addProcessPanel.getProcessPriority();
+    }
+
     public boolean getIsBlocked(){
         return addProcessPanel.getIsBlocked();
     }
 
-    public void setInitialInfo(String name, String time, boolean isLocked){
-        addProcessPanel.setInitialInfo(name, time, isLocked);
+    public boolean getIsSuspended(){
+        return addProcessPanel.getIsSuspended();
+    }
+
+    public boolean getIsDestroyed(){
+        return addProcessPanel.getIsDestroyed();
+    }
+
+    public boolean getIsComunicate(){
+        return addProcessPanel.getIsComunicate();
+    }
+
+    public void setInitialInfo(String name, String time, String priority,boolean[] states){
+        addProcessPanel.setInitialInfo(name, time, priority, states);
     }
 }
