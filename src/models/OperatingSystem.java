@@ -151,9 +151,7 @@ public class OperatingSystem {
 			valideDestroyed(process);
 		}else {
 			addProcess(expired, process, false);
-			addProcess(readyAndDespachado, process, false);
-			MyProcess myProcess = processQueueReady.pop();
-			processQueueReady.push(myProcess, myProcess.getPriority());
+			expiredAndReady(process);
 		}
 	}
 
@@ -164,9 +162,7 @@ public class OperatingSystem {
 			if ((process.getTime() - 5) > 0) {
 				process.setTime(5);
 				addProcess(expired, process, false);
-				addProcess(readyAndDespachado, process, false);
-				MyProcess myProcess = processQueueReady.pop();
-				processQueueReady.push(myProcess, myProcess.getPriority());
+				expiredAndReady(process);
 			}else {
 				MyProcess myProcess = processQueueReady.pop();
 				myProcess.setTime((int) myProcess.getTime());
@@ -174,11 +170,18 @@ public class OperatingSystem {
 			}
 		}else {
 			addProcess(reanude, process, false);
+			expiredAndReady(process);
 		}
 	}
 
-	private void valideSuspended(MyProcess process) {
+	private void expiredAndReady(MyProcess process) {
 		
+		addProcess(readyAndDespachado, process, false);
+		MyProcess myProcess = processQueueReady.pop();
+		processQueueReady.push(myProcess, myProcess.getPriority());
+	}
+
+	private void valideSuspended(MyProcess process) {
 		if (process.isSuspended()) {
 			addProcess(suspended, process, false);
 		} else {
@@ -350,8 +353,8 @@ public class OperatingSystem {
 
 	public static void main(String[] args) {
 		OperatingSystem operatingSystem = new OperatingSystem();
-		operatingSystem.addProcess(new MyProcess("P1", 15, 2, new boolean[] { true, true, true, false }));
-		operatingSystem.addProcess(new MyProcess("P2", 20, 1, new boolean[] { true, false, true, false }));
+		operatingSystem.addProcess(new MyProcess("P1", 15, 2, new boolean[] { true, false, false, false }));
+		operatingSystem.addProcess(new MyProcess("P2", 20, 1, new boolean[] { false, true, false, false }));
 		operatingSystem.addProcess(new MyProcess("P3", 13, 3, new boolean[] { false, false, true, false }));
 
 		operatingSystem.startSimulation();
