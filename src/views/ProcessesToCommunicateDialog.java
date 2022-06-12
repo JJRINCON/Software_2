@@ -11,19 +11,21 @@ public class ProcessesToCommunicateDialog extends JDialog {
 
     private String actualProcess;
 
-    public ProcessesToCommunicateDialog(ActionListener listener, ArrayList<MyProcess> processesToCommunicate,
-                                        String actualProcess){
+    public ProcessesToCommunicateDialog(ActionListener listener, ArrayList<MyProcess> processesAvailableToCommunicate,
+                                        ArrayList<MyProcess> processesNotAvailableToCommunicate, String actualProcess){
         this.actualProcess = actualProcess;
         getContentPane().setLayout(new GridLayout(1,1));
         setModal(true);
         setUndecorated(true);
         setSize(500,500);
-        initProcessesPanel(listener, processesToCommunicate);
+        initProcessesPanel(listener, processesAvailableToCommunicate, processesNotAvailableToCommunicate);
         setLocationRelativeTo(null);
     }
 
-    private void initProcessesPanel(ActionListener listener, ArrayList<MyProcess> processesToCommunicate){
-        ProcessesToCommunicatePanel processes = new ProcessesToCommunicatePanel(listener, processesToCommunicate);
+    private void initProcessesPanel(ActionListener listener,ArrayList<MyProcess> processesAvailableToCommunicate,
+                                    ArrayList<MyProcess> processesNotAvailableToCommunicate){
+        ProcessesToCommunicatePanel processes = new ProcessesToCommunicatePanel(listener, processesAvailableToCommunicate,
+                                                        processesNotAvailableToCommunicate);
         add(processes);
     }
 

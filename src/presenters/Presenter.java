@@ -185,7 +185,8 @@ public class Presenter implements ActionListener {
     private void manageCommunicateProcessAction(ActionEvent e) {
         String processName = ((JButton) e.getSource()).getName();
         processesToCommunicateDialog = new ProcessesToCommunicateDialog(this,
-                operatingSystem.getProcessToCommunicate(processName), processName);
+                operatingSystem.getProcessToCommunicate(processName, true),
+                operatingSystem.getProcessToCommunicate(processName, false), processName);
         processesToCommunicateDialog.setVisible(true);
     }
 

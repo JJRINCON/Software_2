@@ -460,11 +460,11 @@ public class OperatingSystem {
 		return comunicationProcess;
 	}
 
-	public ArrayList<MyProcess> getProcessToCommunicate(String actualProcess){
+	public ArrayList<MyProcess> getProcessToCommunicate(String actualProcess, boolean available){
 		Node<MyProcess> temp = processQueueReady.peek();
 		ArrayList<MyProcess> processesToCommunicate = new ArrayList<>();
 		while(temp != null){
-			if(temp.getData().isComunication() && !temp.getData().getName().equals(actualProcess)){
+			if(temp.getData().isComunication() == available && !temp.getData().getName().equals(actualProcess)){
 				processesToCommunicate.add(temp.getData());
 			}
 			temp = temp.getNext();
