@@ -24,6 +24,7 @@ public class MyProcess implements Comparable<MyProcess>{
 		this.suspended = states[1];
 		this.destroid = states[2];
 		this.comunication = states[3];
+		this.nameComunicationProcess = "";
 	}
 
 	public String getName() {

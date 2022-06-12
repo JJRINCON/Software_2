@@ -1,5 +1,8 @@
 package models;
 
+import exceptions.RepeatedNameException;
+import exceptions.RepeatedPriorityException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -22,6 +25,7 @@ public class OperatingSystem {
 	private ArrayList<MyProcess> destroyedToExecution;
 
 	public OperatingSystem() {
+		this.destroyedToExecution = new ArrayList<>();
 		this.processQueueReady = new Queue<>();
 		this.locked = new ArrayList<>();
 		this.wakeUp = new ArrayList<>();
@@ -67,6 +71,7 @@ public class OperatingSystem {
 		myProcess.setLocked(states[0]);
 		myProcess.setSuspended(states[1]);
 		myProcess.setDestroid(states[2]);
+		myProcess.setComunication(states[3]);
 		MyProcess temp = myProcess;
 		deleteProccess(name);
 		addProcess(temp);
@@ -131,12 +136,12 @@ public class OperatingSystem {
 			if(myProcess!=null && myProcess.isComunication()) {
 				comunicationProcess.add(process);
 			}
-			valideSystemTimer(process);
+			validateSystemTimer(process);
 		}
 		Collections.sort(readyAndDespachado);
 	}
 
-	private void valideSystemTimer(MyProcess process) {
+	private void validateSystemTimer(MyProcess process) {
 		addProcess(executing, process, true);
 		if ((process.getTime() - 5) > 0) {
 			proccessTimeDiscount(process);
@@ -205,7 +210,6 @@ public class OperatingSystem {
 	}
 
 	private void expiredAndReady(MyProcess process) {
-		
 		addProcess(readyAndDespachado, process, false);
 		MyProcess myProcess = processQueueReady.pop();
 		processQueueReady.push(myProcess, myProcess.getPriority());
@@ -241,11 +245,21 @@ public class OperatingSystem {
 		return processQueueReady;
 	}
 
-	public void verifyProcessName(String name) throws Exception {
+	public void verifyProcessName(String name) throws RepeatedNameException {
 		Node<MyProcess> temp = processQueueReady.peek();
 		while (temp != null) {
 			if (temp.getData().getName().equals(name)) {
-				throw new Exception("Nombre de proceso no disponible");
+				throw new RepeatedNameException(name);
+			}
+			temp = temp.getNext();
+		}
+	}
+
+	public void verifyProcessPriority(int priority) throws RepeatedPriorityException {
+		Node<MyProcess> temp = processQueueReady.peek();
+		while(temp != null){
+			if(temp.getData().getPriority() == priority){
+				throw new RepeatedPriorityException(priority);
 			}
 			temp = temp.getNext();
 		}
@@ -355,7 +369,6 @@ public class OperatingSystem {
 	public ArrayList<MyProcess> getProcessWakeUp() {
 		return wakeUp;
 	}
-
 	
 	/**
 	 * 
@@ -438,25 +451,28 @@ public class OperatingSystem {
 		return comunicationProcess;
 	}
 
+	public ArrayList<MyProcess> getProcessToCommunicate(String actualProcess){
+		Node<MyProcess> temp = processQueueReady.peek();
+		ArrayList<MyProcess> processesToCommunicate = new ArrayList<>();
+		while(temp != null){
+			if(temp.getData().isComunication() && !temp.getData().getName().equals(actualProcess)){
+				processesToCommunicate.add(temp.getData());
+			}
+			temp = temp.getNext();
+		}
+		return processesToCommunicate;
+	}
+
 	public static Object[][] processInfo(ArrayList<MyProcess> processes) {
-		Object[][] processInfo = new Object[processes.size()][3];
+		Object[][] processInfo = new Object[processes.size()][6];
 		for (int i = 0; i < processes.size(); i++) {
 			processInfo[i][0] = processes.get(i).getName();
 			processInfo[i][1] = processes.get(i).getTime();
 			processInfo[i][2] = processes.get(i).isLocked();
+			processInfo[i][3] = processes.get(i).isSuspended();
+			processInfo[i][4] = processes.get(i).isDestroid();
+			processInfo[i][5] = processes.get(i).isComunication();
 		}
 		return processInfo;
 	}
-
-	public static void main(String[] args) {
-		OperatingSystem operatingSystem = new OperatingSystem();
-		operatingSystem.addProcess(new MyProcess("P1", 15, 2, new boolean[] { true, false, false, false }));
-		operatingSystem.addProcess(new MyProcess("P2", 20, 1, new boolean[] { false, true, false, false }));
-		operatingSystem.addProcess(new MyProcess("P3", 13, 3, new boolean[] { false, false, true, false }));
-
-		operatingSystem.startSimulation();
-
-		operatingSystem.show();
-	}
-
 }

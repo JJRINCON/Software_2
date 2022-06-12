@@ -81,7 +81,7 @@ public class ProcessesPanel extends MyGridPanel {
     private void addProcesses(Queue<MyProcess> processQueue){
         Node<MyProcess> temp = processQueue.peek();
         while (temp != null){
-            ProcessPanel processPanel = new ProcessPanel(listener, temp.getData().getName());
+            ProcessPanel processPanel = new ProcessPanel(listener, temp.getData().getName(), temp.getData().isComunication());
             processes.add(processPanel);
             temp = temp.getNext();
         }

@@ -24,12 +24,13 @@ public class ProcessInfoPanel extends MyGridPanel {
         initIsSuspendedRb(process.isSuspended());
         initIsDestroyedRb(process.isDestroid());
         initIsCommunicateRb(process.isComunication());
+        initProcessCommunicates(process.getNameComunicationProcess());
         initCloseBtn(process.getName(), actionListener);
     }
 
     private void initName(String name){
         addComponent(new JLabel(" "), 0, 0, 11, 0.1);
-        JLabel titleLb = createLb("  " +name, new Font("Arial", Font.BOLD, 20));
+        JLabel titleLb = createLb("  " + name, new Font("Arial", Font.BOLD, 20));
         titleLb.setHorizontalTextPosition(SwingConstants.CENTER);
         titleLb.setHorizontalAlignment(SwingConstants.CENTER);
         addComponent(titleLb, 3, 1, 4, 0.2);
@@ -74,6 +75,18 @@ public class ProcessInfoPanel extends MyGridPanel {
         addComponent(new JLabel(" "), 0, 11, 11, 0.1);
     }
 
+    private void initProcessCommunicates(String processToCommunicateName){
+        if(!processToCommunicateName.isEmpty()){
+            JLabel communicateLb = new JLabel("El proceso se comunica con:  ");
+            communicateLb.setFont(new Font("Arial", Font.PLAIN, 15));
+            addComponent(communicateLb, 2,12,4,0.1);
+            JLabel communicateProcessLb = new JLabel(processToCommunicateName);
+            communicateProcessLb.setFont(new Font("Arial", Font.BOLD, 15));
+            addComponent(communicateProcessLb, 6,12,2,0.1);
+            addComponent(new JLabel(" "), 0, 13, 12, 0.1);
+        }
+    }
+
     private void initCloseBtn(String name, ActionListener actionListener){
         JButton closeBtn = new JButton(CLOSE_BTN_TXT);
         closeBtn.setName(name);
@@ -82,8 +95,8 @@ public class ProcessInfoPanel extends MyGridPanel {
         closeBtn.setFont(new Font("Arial", Font.BOLD, 15));
         closeBtn.addActionListener(actionListener);
         closeBtn.setActionCommand(Events.CLOSE_INFO.toString());
-        addComponent(closeBtn, 5, 12, 2, 0.1);
-        addComponent(new JLabel(" "), 0, 13, 11, 0.1);
+        addComponent(closeBtn, 5, 14, 2, 0.1);
+        addComponent(new JLabel(" "), 0, 15, 11, 0.1);
     }
 
     private JLabel createLb(String txt, Font font){

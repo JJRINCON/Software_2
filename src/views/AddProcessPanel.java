@@ -1,5 +1,8 @@
 package views;
 
+import exceptions.EmptyProcessNameException;
+import exceptions.EmptyProcessPriorityException;
+import exceptions.EmptyProcessTimeException;
 import presenters.Events;
 
 import javax.swing.*;
@@ -23,6 +26,12 @@ public class AddProcessPanel extends MyGridPanel{
         initComponents(listener, isEditing);
     }
 
+    public AddProcessPanel(ActionListener listener, boolean isEditing, boolean isCommunicate) {
+        setBackground(Color.decode("#FDFEFE"));
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
+        initComponents(listener, isEditing);
+    }
+
     private void initComponents(ActionListener listener, boolean isEditing) {
         initTitle(isEditing);
         initProcessNameTxt();
@@ -32,6 +41,10 @@ public class AddProcessPanel extends MyGridPanel{
         initIsSuspendedCb();
         initIsDestroyedCb();
         initIsCommunicateCb();
+        verifyIsEditing(listener, isEditing);
+    }
+
+    private void verifyIsEditing(ActionListener listener, boolean isEditing){
         if(isEditing){
             initButtons(listener, Events.ACCEPT_EDIT.toString(), Events.CANCEL_EDIT.toString(), isEditing);
         }else{
@@ -104,7 +117,7 @@ public class AddProcessPanel extends MyGridPanel{
         addComponent(isDetroyedCb, 4, 15, 1, 0.1);
     }
 
-    private void initIsCommunicateCb(){
+    private void initIsCommunicateCb() {
         JLabel isCommunicateLb = createLb(" Comunicar: ", new Font("Arial", Font.BOLD, 14));
         addComponent(isCommunicateLb, 7, 15, 2, 0.1);
         isComunicateCb = new JCheckBox();
@@ -117,10 +130,10 @@ public class AddProcessPanel extends MyGridPanel{
     private void initButtons(ActionListener listener, String acceptEvent, String cancelEvent, boolean isEditing){
         String addBtnTxt = isEditing ? "Editar" : "Agregar";
         addBtn = createBtn(addBtnTxt, Color.decode("#27AE60"), listener, acceptEvent);
-        addComponent(addBtn, 3, 17, 2, 0.12);
+        addComponent(addBtn, 3, 18, 2, 0.12);
         JButton cancelBtn = createBtn("Cancelar", Color.decode("#E74C3C"), listener, cancelEvent);
-        addComponent(cancelBtn, 7, 17, 2, 0.12);
-        addComponent(new JLabel(" "), 0, 18, 11, 0.05);
+        addComponent(cancelBtn, 7, 18, 2, 0.12);
+        addComponent(new JLabel(" "), 0, 19, 11, 0.05);
     }
 
     private JLabel createLb(String txt, Font font){
@@ -138,29 +151,29 @@ public class AddProcessPanel extends MyGridPanel{
         return btn;
     }
 
-    public String getProcessName() throws Exception {
+    public String getProcessName() throws EmptyProcessNameException {
         if(!processNameTxt.getText().isEmpty()){
             return processNameTxt.getText();
         }else{
-            throw new Exception("El proceso debe tener un nombre");
+            throw new EmptyProcessNameException();
         }
     }
 
-    public int getProcessTime() throws Exception, NumberFormatException {
+    public int getProcessTime() throws EmptyProcessTimeException, NumberFormatException {
         String text = processTimeTxt.getText();
         if(!text.isEmpty()){
             return Integer.parseInt(text);
         }else{
-            throw new Exception("El proceso debe tener un tiempo");
+            throw new EmptyProcessTimeException();
         }
     }
 
-    public int getProcessPriority() throws Exception, NumberFormatException {
+    public int getProcessPriority() throws EmptyProcessPriorityException, NumberFormatException {
         String text = processPriorityTxt.getText();
         if(!text.isEmpty()){
             return Integer.parseInt(text);
         }else{
-            throw new Exception("El proceso debe tener una prioridad");
+            throw new EmptyProcessPriorityException();
         }
     }
 
