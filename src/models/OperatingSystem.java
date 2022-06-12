@@ -13,9 +13,11 @@ public class OperatingSystem {
 	private ArrayList<MyProcess> locked;
 	private ArrayList<MyProcess> wakeUp;
 	private ArrayList<MyProcess> suspended;
+	private ArrayList<MyProcess> toSuspended;
 	private ArrayList<MyProcess> reanude;
 	private ArrayList<MyProcess> executing;
 	private ArrayList<MyProcess> expired;
+	private ArrayList<MyProcess> toDestroyed;
 	private ArrayList<MyProcess> destroyed;
 	private ArrayList<MyProcess> processTerminated;
 	private ArrayList<MyProcess> comunicationProcess;
@@ -34,12 +36,14 @@ public class OperatingSystem {
 		this.executing = new ArrayList<>();
 		this.expired = new ArrayList<>();
 		this.readyAndDespachado = new ArrayList<>();
+		this.toDestroyed = new ArrayList<>();
 		this.destroyed = new ArrayList<>();
 		this.reanude = new ArrayList<>();
 		this.comunicationProcess = new ArrayList<>();
 		this.lockedToSuspended = new ArrayList<>();
 		this.lockedToDestroyed = new ArrayList<>();
 		this.suspendedToDestroyed = new ArrayList<>();
+		this.toSuspended = new ArrayList<>();
 	}
 
 	public boolean addProcess(MyProcess myProcess) {
@@ -133,7 +137,7 @@ public class OperatingSystem {
 		while (!processQueueReady.isEmpty()) {
 			MyProcess process = processQueueReady.peek().getData();			
 			MyProcess myProcess = search(process.getNameComunicationProcess());
-			if(myProcess!=null && myProcess.isComunication()) {
+			if(process.isComunication() && myProcess!=null && myProcess.isComunication()) {
 				comunicationProcess.add(process);
 			}
 			validateSystemTimer(process);
@@ -160,9 +164,14 @@ public class OperatingSystem {
 	private void valideLocked(MyProcess process) {
 		if (process.isLocked()) {
 			addProcess(locked, process, false);
-			valideSuspended(process);
-			valideDestroyedToLocked(process);
+			if(process.isSuspended()) {				
+				valideSuspended(process);
+				valideDestroyed(process);
+			}else if (process.isLocked()) {
+				valideDestroyedToLocked(process);
+			}
 		} else if (process.isSuspended()) {
+			addProcess(toSuspended,process,false);
 			addProcess(suspended, process, false);
 			valideDestroyed(process);
 		} else if(process.isDestroid()) {
@@ -375,7 +384,7 @@ public class OperatingSystem {
 	 * @return  a suspendidos
 	 */
 	public ArrayList<MyProcess> getToSuspended() {
-		return suspended;
+		return toSuspended;
 	}
 	
 	/**
@@ -424,7 +433,7 @@ public class OperatingSystem {
 	 * @return a destruir
 	 */
 	public ArrayList<MyProcess> toDestroyed() {
-		return destroyed;
+		return toDestroyed;
 	}
 	
 	/**
