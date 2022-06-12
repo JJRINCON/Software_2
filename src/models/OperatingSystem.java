@@ -164,17 +164,20 @@ public class OperatingSystem {
 	private void valideLocked(MyProcess process) {
 		if (process.isLocked()) {
 			addProcess(locked, process, false);
-			if(process.isSuspended()) {				
+			if(process.isSuspended()) {	
 				valideSuspended(process);
 				valideDestroyed(process);
-			}else if (process.isLocked()) {
+			}else if (process.isDestroid()) {
 				valideDestroyedToLocked(process);
+			}else  {
+				addProcess(wakeUp,process,false);
 			}
 		} else if (process.isSuspended()) {
 			addProcess(toSuspended,process,false);
 			addProcess(suspended, process, false);
 			valideDestroyed(process);
 		} else if(process.isDestroid()) {
+			addProcess(toDestroyed, process, false);
 			destroyed(process);
 		}else {
 			addProcess(expired, process, false);
@@ -187,7 +190,7 @@ public class OperatingSystem {
 			addProcess(lockedToDestroyed, process, false);
 			destroyed(process);
 		}else {
-			addProcess(reanude, process, false);
+//			addProcess(reanude, process, false);
 			expiredAndReady(process);
 		}
 	}
