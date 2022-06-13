@@ -171,6 +171,7 @@ public class OperatingSystem {
 				valideDestroyedToLocked(process);
 			}else  {
 				addProcess(wakeUp,process,false);
+				addProcess(readyAndDespachado,process,false);
 			}
 		} else if (process.isSuspended()) {
 			addProcess(toSuspended,process,false);
