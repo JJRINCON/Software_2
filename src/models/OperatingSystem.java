@@ -488,4 +488,13 @@ public class OperatingSystem {
 		}
 		return processInfo;
 	}
+
+	public static Object[][] processCommunicateInfo(ArrayList<MyProcess> processes){
+		Object[][] processInfo = new Object[processes.size()][2];
+		for (int i = 0; i < processes.size(); i++) {
+			processInfo[i][0] = processes.get(i).getName();
+			processInfo[i][1] = processes.get(i).getNameComunicationProcess();
+		}
+		return processInfo;
+	}
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class ReportsPanel extends JPanel {
 
     private static final String[] COLUMNS = {"Nombre", "Tiempo", "Bloqueo", "Suspende", "Destruye", "Comunica"};
+    private static final String[] COMMUNICATE_COLUMNS = {"Nombre", "Se comunica con"};
 
     public ReportsPanel(ArrayList<MyProcess> readyProcess, ArrayList<MyProcess> dispatchedProcess,
                         ArrayList<MyProcess> executingProcess, ArrayList<MyProcess> toLockedProcess,
@@ -77,7 +78,7 @@ public class ReportsPanel extends JPanel {
         TablePanel destroyedToExecutionTable = new TablePanel(OperatingSystem.processInfo(destroyedToExecutionProcess), COLUMNS);
         reports.add("De destruidos a ejecucion", destroyedToExecutionTable);
 
-        TablePanel communicationTable = new TablePanel(OperatingSystem.processInfo(communicationProcess), COLUMNS);
+        TablePanel communicationTable = new TablePanel(OperatingSystem.processCommunicateInfo(communicationProcess), COMMUNICATE_COLUMNS);
         reports.add("Se comunican", communicationTable);
 
         TablePanel terminatedTable = new TablePanel(OperatingSystem.processInfo(terminatedProcess), COLUMNS);
@@ -100,8 +101,8 @@ public class ReportsPanel extends JPanel {
         titleLb.setHorizontalAlignment(SwingConstants.CENTER);
         add(titleLb, BorderLayout.NORTH);
         titlePanel.addComponent(titleLb, 3, 1, 6, 0.1);
-        JButton exportBtn = createBtn("Exportar a PDF", Color.decode("#2980B9"), listener, Events.EXPORT.toString());
-        titlePanel.addComponent(exportBtn, 10, 1, 2, 0.1);
+        //JButton exportBtn = createBtn("Exportar a PDF", Color.decode("#2980B9"), listener, Events.EXPORT.toString());
+        //titlePanel.addComponent(exportBtn, 10, 1, 2, 0.1);
         add(titlePanel, BorderLayout.NORTH);
     }
 
