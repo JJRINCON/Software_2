@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Software_2:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Software_2_jar</output-path>
+    <root id="archive" name="Software_2.jar">
+      <element id="module-output" name="Software_2" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/modelslib/itext-5.0.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

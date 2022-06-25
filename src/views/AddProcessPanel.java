@@ -11,9 +11,10 @@ import java.awt.event.ActionListener;
 
 public class AddProcessPanel extends MyGridPanel{
 
+    private static final String COMMUNICATE_PROCESS_BTN_TXT = "comunicar";
     private JTextField processNameTxt;
     private JTextField processTimeTxt;
-    private JTextField processPriorityTxt;
+    private JTextField processPriorityTxt , processChangePriorityTxt;
     private JCheckBox isBlockedCb;
     private JCheckBox isSuspendedCb;
     private JCheckBox isDetroyedCb;
@@ -37,6 +38,7 @@ public class AddProcessPanel extends MyGridPanel{
         initProcessNameTxt();
         initProcessTimeTxt();
         initProcessPriorityTxt();
+        initProcessChangePriorityTxt();
         initIsBlockedCb();
         initIsSuspendedCb();
         initIsDestroyedCb();
@@ -89,23 +91,33 @@ public class AddProcessPanel extends MyGridPanel{
         addComponent(new JLabel(" "), 0, 10, 11, 0.1);
     }
 
+    private void initProcessChangePriorityTxt(){
+        JLabel priorityLb = createLb("Cambio de  Prioridad: ", new Font("Arial", Font.BOLD, 14));
+        addComponent(priorityLb, 2, 11, 2, 0.1);
+        processChangePriorityTxt = new JTextField();
+        processChangePriorityTxt.setFont(new Font("Arial", Font.PLAIN, 13));
+        processChangePriorityTxt.setText("");
+        addComponent(processChangePriorityTxt, 4, 11, 6, 0.1);
+        addComponent(new JLabel(" "), 0, 12, 11, 0.1);
+    }
+
     private void initIsBlockedCb(){
         JLabel isBlockedLb = createLb(" Bloqueo: ", new Font("Arial", Font.BOLD, 14));
-        addComponent(isBlockedLb, 2, 11, 2, 0.1);
+        addComponent(isBlockedLb, 2, 13, 2, 0.1);
         isBlockedCb = new JCheckBox();
         isBlockedCb.setBackground(Color.WHITE);
         isBlockedCb.setHorizontalAlignment(SwingConstants.CENTER);
-        addComponent(isBlockedCb, 4, 11, 1, 0.1);
+        addComponent(isBlockedCb, 4, 13, 1, 0.1);
     }
 
     private void initIsSuspendedCb(){
         JLabel isSuspendedLb = createLb(" Suspender: ", new Font("Arial", Font.BOLD, 14));
-        addComponent(isSuspendedLb, 7, 11, 2, 0.1);
+        addComponent(isSuspendedLb, 7, 13, 2, 0.1);
         isSuspendedCb = new JCheckBox();
         isSuspendedCb.setBackground(Color.WHITE);
         isSuspendedCb.setHorizontalAlignment(SwingConstants.RIGHT);
-        addComponent(isSuspendedCb, 9, 11, 1, 0.1);
-        addComponent(new JLabel(" "), 0, 12, 11, 0.1);
+        addComponent(isSuspendedCb, 9, 13, 1, 0.1);
+        addComponent(new JLabel(" "), 0, 14, 11, 0.1);
     }
 
     private void initIsDestroyedCb(){
@@ -130,9 +142,9 @@ public class AddProcessPanel extends MyGridPanel{
     private void initButtons(ActionListener listener, String acceptEvent, String cancelEvent, boolean isEditing){
         String addBtnTxt = isEditing ? "Editar" : "Agregar";
         addBtn = createBtn(addBtnTxt, Color.decode("#27AE60"), listener, acceptEvent);
-        addComponent(addBtn, 3, 18, 2, 0.12);
+        addComponent(addBtn, 3, 20, 2, 0.12);
         JButton cancelBtn = createBtn("Cancelar", Color.decode("#E74C3C"), listener, cancelEvent);
-        addComponent(cancelBtn, 7, 18, 2, 0.12);
+        addComponent(cancelBtn, 7, 20, 2, 0.12);
         addComponent(new JLabel(" "), 0, 19, 11, 0.05);
     }
 
@@ -176,6 +188,13 @@ public class AddProcessPanel extends MyGridPanel{
             throw new EmptyProcessPriorityException();
         }
     }
+/*
+    private void initCommunicateBtn(String name){
+        JButton communicateProcessBtn = createBtn(COMMUNICATE_PROCESS_BTN_TXT, Color.decode("#884EA0"), listener,
+                Events.COMMUNICATE_PROCESS.toString(), name);
+        addComponent(communicateProcessBtn,4,18,2,0.05);
+        addComponent(new JLabel(" "), 0, 29, 11, 0.05);
+    }*/
 
     public void setInitialInfo(String name, String time, String priority,boolean[] states){
         processNameTxt.setText(name);
@@ -202,5 +221,9 @@ public class AddProcessPanel extends MyGridPanel{
 
     public boolean getIsComunicate(){
         return isComunicateCb.isSelected();
+    }
+
+    public int getChangePriority() {
+        return processChangePriorityTxt.getText().isEmpty()? 0 : Integer.parseInt(processChangePriorityTxt.getText());
     }
 }

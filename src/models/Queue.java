@@ -3,9 +3,11 @@ package models;
 public class Queue<T> {
 
 	private Node<T> firstNode;
+	private Node<T> finishNode;
 
 	public Queue() {
 		this.firstNode = null;
+		this.finishNode= null;
 	}
 
 	public void push(T data, int priority) {
@@ -20,6 +22,17 @@ public class Queue<T> {
 			pushPriority(temp);
 		}
 
+	}
+
+	public void pushReady(T data, int priority) {
+		Node<T> temp = new Node<T>(data, 0);
+		if (firstNode == null) {
+			firstNode = temp;
+			finishNode= temp;
+		}else {
+			finishNode.setNext(temp);
+			finishNode = finishNode.getNext();
+		}
 	}
 
 	public void show() {
@@ -92,14 +105,5 @@ public class Queue<T> {
 		return firstNode;
 	}
 
-	public static void main(String[] args) {
-		Queue<String> queue = new Queue<>();
-		queue.push("P1", 1);
-		queue.push("P2", 5);
-		queue.push("P3", 3);
-		queue.push("P4", 4);
-		queue.push("P5", 2);
-		queue.show();
-	}
 
 }

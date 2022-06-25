@@ -69,4 +69,8 @@ public class AddProcessDialog extends JDialog {
         addProcessPanel.setInitialInfo(process.getName(), String.valueOf(process.getTime()),
                 String.valueOf(process.getPriority()), states);
     }
+
+    public int getProcessChangePriority() {
+       return  addProcessPanel.getChangePriority();
+    }
 }

@@ -1,34 +1,45 @@
 package models;
 
+import java.util.ArrayList;
+
 public class MyProcess implements Comparable<MyProcess>{
 
 	
 	private String name, nameComunicationProcess;
+	private ArrayList<MyProcess>comunications;
 	private double time;
 	private int priority;
 	private boolean locked, suspended,destroid, comunication;
 
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @param time
 	 * @param priority
 	 * @param states la lsitica de estados para no llenar tanto el constructor, xd :3
 	 */
-	public MyProcess(String name, double time,int priority, boolean ... states ) {
+	public MyProcess(String name, double time,int priority,int changePriority, boolean ... states ) {
 		super();
 		this.name = name;
 		this.time = time;
 		this.priority = priority;
+		if (changePriority != priority && changePriority != 0){
+			this.priority=changePriority;
+		}
 		this.locked = states[0];
 		this.suspended = states[1];
 		this.destroid = states[2];
 		this.comunication = states[3];
 		this.nameComunicationProcess = "";
+		this.comunications=new ArrayList<>();
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public void addComunication(MyProcess p){
+		comunications.add(p);
 	}
 
 	public void setName(String name) {
@@ -102,4 +113,7 @@ public class MyProcess implements Comparable<MyProcess>{
 				isSuspended() + " "+ isDestroid() + " "+ isComunication();
 		}
 
+	public ArrayList<MyProcess> getComunications() {
+		return comunications;
+	}
 }

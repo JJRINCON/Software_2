@@ -105,7 +105,7 @@ public class Presenter implements ActionListener {
             boolean[] states = {addProcessDialog.getIsBlocked(), addProcessDialog.getIsSuspended(),
                     addProcessDialog.getIsDestroyed(), addProcessDialog.getIsComunicate()};
             MyProcess newProcess = new MyProcess(addProcessDialog.getProcessName(), addProcessDialog.getProcessTime(),
-                    addProcessDialog.getProcessPriority(), states);
+                    addProcessDialog.getProcessPriority(),addProcessDialog.getProcessChangePriority(), states);
             operatingSystem.addProcess(newProcess);
             addProcessDialog.dispose();
             mainFrame.updateProcesses(operatingSystem.getProcessQueue());

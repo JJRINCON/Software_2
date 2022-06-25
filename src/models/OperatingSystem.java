@@ -3,11 +3,13 @@ package models;
 import exceptions.RepeatedNameException;
 import exceptions.RepeatedPriorityException;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class OperatingSystem {
 
+	private final Queue<MyProcess> processReady;
 	private Queue<MyProcess> processQueueReady;
 	private ArrayList<MyProcess> readyAndDespachado;
 	private ArrayList<MyProcess> locked;
@@ -29,6 +31,7 @@ public class OperatingSystem {
 	public OperatingSystem() {
 		this.destroyedToExecution = new ArrayList<>();
 		this.processQueueReady = new Queue<>();
+		this.processReady = new Queue<>();
 		this.locked = new ArrayList<>();
 		this.wakeUp = new ArrayList<>();
 		this.processTerminated = new ArrayList<>();
@@ -49,6 +52,7 @@ public class OperatingSystem {
 	public boolean addProcess(MyProcess myProcess) {
 		if (search(myProcess.getName()) == null) {
 			addProcess(readyAndDespachado, myProcess, false);
+			Collections.sort(readyAndDespachado);
 			processQueueReady.push(myProcess, myProcess.getPriority());
 			return true;
 		}
@@ -134,15 +138,30 @@ public class OperatingSystem {
 	}
 
 	public void startSimulation() {
-		while (!processQueueReady.isEmpty()) {
-			MyProcess process = processQueueReady.peek().getData();			
-			MyProcess myProcess = search(process.getNameComunicationProcess());
-			if(process.isComunication() && myProcess!=null && myProcess.isComunication()) {
-				comunicationProcess.add(process);
+		Node<MyProcess> temp = processQueueReady.peek();
+		while (temp != null){
+			processReady.pushReady(temp.getData(), temp.getData().getPriority());
+			temp =temp.getNext();
+		}
+		while (!processReady.isEmpty()) {
+			MyProcess process = processReady.peek().getData();
+			System.out.println("sd00"+process.getName());
+			if(process.isComunication() ) {
+				System.out.println(process.getName());
+				Node<MyProcess> temp2 = processReady.peek();
+				while (temp2 != null){
+					if(!temp2.getData().getName().equals(process.getName())){
+						MyProcess p = temp2.getData();
+						process.addComunication(p);
+						addProcess(comunicationProcess,process.getComunications().get(process.getComunications().size()-1) , false);
+					}
+					temp2 =temp2.getNext();
+				}
+
 			}
 			validateSystemTimer(process);
 		}
-		Collections.sort(readyAndDespachado);
+//		Collections.sort(readyAndDespachado);
 	}
 
 	private void validateSystemTimer(MyProcess process) {
@@ -150,7 +169,7 @@ public class OperatingSystem {
 		if ((process.getTime() - 5) > 0) {
 			proccessTimeDiscount(process);
 		} else {
-			MyProcess myProcess = processQueueReady.pop();
+			MyProcess myProcess = processReady.pop();
 			myProcess.setTime((int) myProcess.getTime());
 			addProcess(processTerminated, myProcess, false);
 		}
@@ -170,8 +189,7 @@ public class OperatingSystem {
 			}else if (process.isDestroid()) {
 				valideDestroyedToLocked(process);
 			}else  {
-				addProcess(wakeUp,process,false);
-				addProcess(readyAndDespachado,process,false);
+				expiredAndReady(process);
 			}
 		} else if (process.isSuspended()) {
 			addProcess(toSuspended,process,false);
@@ -207,7 +225,7 @@ public class OperatingSystem {
 	}
 
 	private void destroyed(MyProcess process) {
-		process.setComunication(false);
+//		process.setComunication(false);
 		addProcess(executing,process,true);
 		addProcess(destroyed, process, false);
 		addProcess(destroyedToExecution, process , false);
@@ -216,7 +234,7 @@ public class OperatingSystem {
 			addProcess(expired, process, false);
 			expiredAndReady(process);
 		}else {
-			MyProcess myProcess = processQueueReady.pop();
+			MyProcess myProcess = processReady.pop();
 			myProcess.setTime((int) myProcess.getTime());
 			addProcess(processTerminated, myProcess, false);
 		}
@@ -224,8 +242,8 @@ public class OperatingSystem {
 
 	private void expiredAndReady(MyProcess process) {
 		addProcess(readyAndDespachado, process, false);
-		MyProcess myProcess = processQueueReady.pop();
-		processQueueReady.push(myProcess, myProcess.getPriority());
+		MyProcess myProcess = processReady.pop();
+		processReady.pushReady(myProcess, myProcess.getPriority());
 	}
 
 	private void valideSuspended(MyProcess process) {
@@ -243,9 +261,9 @@ public class OperatingSystem {
 		if (isExecuting) {
 			myProcesses
 					.add(new MyProcess(myProcess.getName(), (myProcess.getTime() - 5 < 0 ? 0 : myProcess.getTime() - 5),
-							myProcess.getPriority(), states));
+							myProcess.getPriority(),0, states));
 		} else {
-			myProcesses.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.getPriority(), states));
+			myProcesses.add(new MyProcess(myProcess.getName(), myProcess.getTime(), myProcess.getPriority(),0, states));
 		}
 	}
 
@@ -492,8 +510,16 @@ public class OperatingSystem {
 	public static Object[][] processCommunicateInfo(ArrayList<MyProcess> processes){
 		Object[][] processInfo = new Object[processes.size()][2];
 		for (int i = 0; i < processes.size(); i++) {
-			processInfo[i][0] = processes.get(i).getName();
-			processInfo[i][1] = processes.get(i).getNameComunicationProcess();
+			if (!processes.get(i).getComunications().isEmpty()){
+				for (int j = 0; j < processes.get(i).getComunications().size(); j++) {
+					processInfo[j][0] = processes.get(i).getName();
+					processInfo[j][1] = processes.get(j).getName();
+				}
+			}else{
+				processInfo[i][0] = processes.get(i).getName();
+				processInfo[i][1] = processes.get(i).getNameComunicationProcess();
+			}
+
 		}
 		return processInfo;
 	}
